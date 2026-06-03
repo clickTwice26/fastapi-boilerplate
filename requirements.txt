@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+gunicorn
+pydantic-settings
+pydantic
+SQLAlchemy
+asyncpg
+alembic
+redis
+email-validator
+python-json-logger
+orjson
+pytest
+pytest-asyncio
+pytest-cov
+httpx
+ruff

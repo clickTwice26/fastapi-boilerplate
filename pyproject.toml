@@ -1,0 +1,32 @@
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "ASYNC"]
+ignore = ["S101"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "--cov=app --cov-report=term-missing --cov-fail-under=100"
+
+[tool.coverage.run]
+branch = true
+source = ["app"]
+omit = [
+    "app/__init__.py",
+    "app/api/__init__.py",
+    "app/api/v1/__init__.py",
+    "app/api/v1/routes/__init__.py",
+    "app/core/__init__.py",
+    "app/db/__init__.py",
+    "app/models/__init__.py",
+    "app/repositories/__init__.py",
+    "app/schemas/__init__.py",
+    "app/services/__init__.py",
+]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = true

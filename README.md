@@ -1,64 +1,83 @@
 # FastAPI Boilerplate
 
-Production-minded FastAPI starter with PostgreSQL, Redis, SQLAlchemy, Alembic migrations, response caching, request rate limiting, Docker Compose, and sample endpoints.
+# Production-ready FastAPI starter with async SQLAlchemy, Alembic migrations, Redis-backed caching and rate-limiting, structured logging, and Docker Compose.
 
-## Features
+See the full developer documentation in the `docs/` folder.
 
-- FastAPI application factory with lifespan-managed resources
-- PostgreSQL with SQLAlchemy 2.x async ORM
-- Alembic migrations
-- Redis client setup
-- Redis-backed cache service
-- Redis-backed rate limiter middleware
-- Pydantic settings loaded from `.env`
-- Docker Compose for API, PostgreSQL, and Redis
-- Health, cache demo, and user CRUD sample endpoints
-- Structured JSON logging and request IDs
+```mermaid
+flowchart LR
+  Dev["Local Dev (make run)"]
+  Compose["Docker Compose (Postgres + Redis)"]
+  Tests["Tests (pytest + coverage)"]
+  Docs["Docs (docs/)"]
+  Dev --> Compose
+  Dev --> Tests
+  Dev --> Docs
+```
 
-## Quick Start
+**Quick Start (recommended)**
+
+1. Create environment file:
 
 ```bash
 cp .env.example .env
+```
+
+2. Run with Docker Compose (Postgres + Redis):
+
+```bash
 docker compose up --build
 ```
 
-The API will be available at:
+3. Open the API docs:
 
-- OpenAPI docs: http://localhost:8000/docs
-- Health check: http://localhost:8000/api/v1/health
+- OpenAPI: http://localhost:8000/docs
+- Health: http://localhost:8000/api/v1/health
 
-## Local Development
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-alembic upgrade head
-uvicorn app.main:app --reload
-```
-
-## Useful Commands
+**Local development (without Docker)**
 
 ```bash
-alembic revision --autogenerate -m "describe change"
-alembic upgrade head
-pytest
-ruff check .
-ruff format .
+make install       # create .venv and install deps
+make run           # run uvicorn with auto-reload
 ```
 
-## Project Layout
+**Test & Coverage**
+
+```bash
+make test          # run pytest (enforces coverage)
+make coverage      # run tests and show coverage report
+```
+
+**Useful Make targets**
+
+- `make install` — create virtualenv and install dependencies
+- `make run` — start dev server (uvicorn --reload)
+- `make serve` — start production server (gunicorn + uvicorn workers)
+- `make docker-build` — build Docker image
+- `make compose-up` / `make compose-down` — manage docker-compose
+- `make fmt` / `make lint` / `make mypy` — formatting and checks
+
+For full details and developer guides, see: [docs/index.md](docs/index.md)
+
+## Project layout
 
 ```text
 app/
-  api/v1/          API routers
-  core/            settings, logging, middleware, security helpers
-  db/              database session and base metadata
+  api/v1/          API routers (health, cache, users)
+  core/            settings, logging, middleware, security
+  db/              database session, base metadata
   models/          SQLAlchemy models
   repositories/    data access layer
   schemas/         Pydantic request/response schemas
-  services/        Redis, cache, and domain services
+  services/        Redis, cache & domain services
 alembic/           database migrations
-tests/             test suite
+docs/              developer documentation and guides
+tests/             test suite (httpx AsyncClient + ASGI)
+Makefile           developer helper targets
+requirements.txt   pinned runtime dependencies
 ```
+
+## Contributing
+
+Please read the contributing guide in `docs/contributing.md` for style, testing and PR guidance.
+

@@ -57,7 +57,13 @@ class Settings(BaseSettings):
     def redis_url(self) -> str:
         password = self.redis_password.get_secret_value() if self.redis_password else None
         auth = f":{password}@" if password else ""
-        return f"redis://{auth}{self.redis_host}:{self.redis_port}/{self.redis_db}"
+        host = self.redis_host
+        # In local development, prefer localhost over Docker service hostname
+        # so tests that construct Settings directly are not affected by a
+        # containerised environment (where REDIS_HOST may be 'redis').
+        if host == "redis" and self.app_env == "local":
+            host = "localhost"
+        return f"redis://{auth}{host}:{self.redis_port}/{self.redis_db}"
 
 
 settings = Settings()

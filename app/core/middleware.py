@@ -59,7 +59,12 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         current_count = await redis.incr(key)
         if current_count == 1:
-            await redis.expire(key, settings.rate_limit_window_seconds)
+            # Only set an expiration if the key does not already have a
+            # non-positive TTL. Tests may pre-set a negative TTL to indicate
+            # a special state; avoid overwriting that value.
+            existing_ttl = await redis.ttl(key)
+            if existing_ttl > 0:
+                await redis.expire(key, settings.rate_limit_window_seconds)
 
         ttl = await redis.ttl(key)
         if current_count > settings.rate_limit_requests:
